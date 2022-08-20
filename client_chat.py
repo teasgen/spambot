@@ -64,11 +64,11 @@ def write_chat(file_name):
             loop.run_until_complete(dialog.delete())
 
 
-print(dialog_names)
 chat_name = input('Input chat name: ')
 while chat_name not in dialog_names:
     chat_name = input('Incorrect chat name. Please, try again: ')
-action = int(input('Do you want to remember chat members (1), or to write them and delete chat (2), or to use both options (3): '))
+action = int(input('Do you want to remember chat members (1), or to write them and delete chat (2), '
+                   'or to use both options (3): '))
 while action not in [1, 2, 3]:
     action = int(input('Incorrect number. Please, try again: '))
 
