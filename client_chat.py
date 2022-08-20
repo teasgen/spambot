@@ -1,12 +1,7 @@
 from telethon import TelegramClient
 import asyncio
 import csv
-
-# username = input('Input your username: ')
-# api_id = int(input('Input your api_id: '))
-from telethon import TelegramClient
-import asyncio
-import csv
+import time
 
 # username = input('Input your username: ')
 # api_id = int(input('Input your api_id: '))
@@ -21,6 +16,7 @@ client.start()
 loop = asyncio.get_event_loop()
 # cash
 dialogs = loop.run_until_complete(client.get_dialogs())
+dialog_names = [dialogs[i].name for i in range (len(dialogs))]
 
 
 def read_chat(file_name):
@@ -68,8 +64,13 @@ def write_chat(file_name):
             loop.run_until_complete(dialog.delete())
 
 
+print(dialog_names)
 chat_name = input('Input chat name: ')
-action = int(input('Do you want to remember chat members (1), or to write them (2), or to use both options (3): '))
+while chat_name not in dialog_names:
+    chat_name = input('Incorrect chat name. Please, try again: ')
+action = int(input('Do you want to remember chat members (1), or to write them and delete chat (2), or to use both options (3): '))
+while action not in [1, 2, 3]:
+    action = int(input('Incorrect number. Please, try again: '))
 
 file_name = chat_name + '.csv'
 
@@ -81,6 +82,4 @@ else:
     read_chat(file_name)
     write_chat(file_name)
 
-
-
-
+time.sleep(120)
