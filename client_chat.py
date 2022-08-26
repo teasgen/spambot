@@ -78,5 +78,3 @@ elif action == 2:
 else:
     read_chat(file_name)
     write_chat(file_name)
-
-time.sleep(120)
