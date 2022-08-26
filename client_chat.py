@@ -3,12 +3,9 @@ import asyncio
 import csv
 import time
 
-# username = input('Input your username: ')
-# api_id = int(input('Input your api_id: '))
-# api_hash = input('Input your hash_id: ')
-username = '@teasgen'
-api_id = 18822033
-api_hash = 'd6afbf228951e9bd4cd994530b56b119'
+username = input('Input your username: ')
+api_id = int(input('Input your api_id: '))
+api_hash = input('Input your hash_id: ')
 
 client = TelegramClient(username, api_id, api_hash)
 client.start()
