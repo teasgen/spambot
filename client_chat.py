@@ -75,7 +75,7 @@ def write_chat(delete=0):
             if photo == 'yes':
                 loop.run_until_complete(client.send_file(user, 'photo.jpg'))
 
-    df = pd.read_csv("total_users.csv")
+    df = pd.read_csv("total_users.csv", encoding='windows-1251')
     df['status'] = df['status'].replace({0: 1})
     df.to_csv("total_users.csv", index=False)
 
