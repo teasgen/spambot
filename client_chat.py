@@ -2,6 +2,8 @@ from telethon import TelegramClient
 import asyncio
 import csv
 import pandas as pd
+from telethon.tl.functions.channels import GetParticipantsRequest
+from telethon.tl.types import ChannelParticipantsSearch
 
 username = input('Input your username: ')
 api_id = int(input('Input your api_id: '))
@@ -17,7 +19,23 @@ dialog_names = [dialogs[i].name for i in range(len(dialogs))]
 
 
 def read_chat(chat_name):
-    participants = loop.run_until_complete(client.get_participants(chat_name))
+    try:
+        participants = []
+        while_condition = True
+        my_filter = ChannelParticipantsSearch('')
+        offset = 0
+        while while_condition:
+            participants2 = loop.run_until_complete(client(
+                GetParticipantsRequest(channel=chat_name, offset=offset, filter=my_filter, limit=200, hash=0)))
+
+            participants.extend(participants2.users)
+            offset += len(participants2.users)
+
+            if len(participants2.users) < 1:
+                while_condition = False
+    except:
+        participants = loop.run_until_complete(client.get_participants(chat_name))
+
     ids = []
     for user in participants:
         if not user.bot:
@@ -36,7 +54,7 @@ def read_chat(chat_name):
             if user.id not in total:
                 try:
                     writer.writerow([user.id] + [user.username] + [user.first_name] + [user.last_name] + [user.phone] +
-                                [chat_name] + [0])
+                                    [chat_name] + [0])
                 except:
                     writer.writerow([user.id] + [0] + [0] + [0] + [0] +
                                     [0] + [0])
