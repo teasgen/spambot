@@ -40,6 +40,7 @@ def read_chat(file_name):
 
     with open(file_name, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
+        writer.writerow(['user id'] + ['username'] + ['user first name'] + ['user last name'] + ['user phone'])
         for user in participants:
             if not user.bot and user.id not in bad_ids:
                 try:
@@ -48,14 +49,21 @@ def read_chat(file_name):
                     writer.writerow([user.id] + [user.username] + [user.phone])
 
 
-def write_chat(file_name):
+def write_chat(file_name, delete=0):
     with open(file_name, 'r') as csvfile:
         reader = csv.reader(csvfile)
-        users = [int(user[0]) for user in reader]
+        # users = [int(user[0]) for user in reader]
+        users = []
+        for i, user in enumerate(reader):
+            if i:
+                users.append(int(user[0]))
+
     with open('message.txt') as file_message:
         message = file_message.read()
         for user in users:
             loop.run_until_complete(client.send_message(user, message))
+    if not delete:
+        return
     for dialog in client.iter_dialogs():
         if dialog.entity.id in users:
             loop.run_until_complete(dialog.delete())
@@ -64,9 +72,14 @@ def write_chat(file_name):
 chat_name = input('Input chat name: ')
 while chat_name not in dialog_names:
     chat_name = input('Incorrect chat name. Please, try again: ')
-action = int(input('Do you want to remember chat members (1), or to write them and delete chat (2), '
-                   'or to use both options (3): '))
-while action not in [1, 2, 3]:
+action = int(input('Action:\n'
+                   '    1: Remember chat members,\n'
+                   '    2: Write them, \n'
+                   '    3: Write them and delete chats,\n'
+                   '    4: Remember and write\n'
+                   '    5: Remember, write and delete\n'))
+
+while action not in [1, 2, 3, 4, 5]:
     action = int(input('Incorrect number. Please, try again: '))
 
 file_name = chat_name + '.csv'
@@ -74,7 +87,12 @@ file_name = chat_name + '.csv'
 if action == 1:
     read_chat(file_name)
 elif action == 2:
-    write_chat(file_name)
-else:
+    write_chat(file_name, 0)
+elif action == 3:
+    write_chat(file_name, 1)
+elif action == 4:
     read_chat(file_name)
-    write_chat(file_name)
+    write_chat(file_name, 0)
+elif action == 5:
+    read_chat(file_name)
+    write_chat(file_name, 1)
