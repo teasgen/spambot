@@ -34,7 +34,8 @@ def read_chat(chat_name):
         writer = csv.writer(csv_total)
         for user in ids:
             if user.id not in total:
-                writer.writerow([user.id] + [user.username] + [user.first_name] + [user.last_name] + [user.phone] + [0])
+                writer.writerow([user.id] + [user.username] + [user.first_name] + [user.last_name] + [user.phone] +
+                                [chat_name] + [0])
 
 
 def write_chat(delete=0):
@@ -42,7 +43,7 @@ def write_chat(delete=0):
         reader = csv.reader(csvfile)
         users = []
         for i, user in enumerate(reader):
-            if i and user[5] == '0':
+            if i and user[6] == '0':
                 users.append(int(user[0]))
 
     with open('message.txt') as file_message:
@@ -61,23 +62,26 @@ def write_chat(delete=0):
             loop.run_until_complete(dialog.delete())
 
 
-action = int(input('Action:\n'
-                   '    1: Remember chat members,\n'
-                   '    2: Write to all, \n'
-                   '    3: Write to all and delete chats,\n'))
+while True:
+    action = int(input('Action:\n'
+                       '    1: Remember chat members,\n'
+                       '    2: Write to all, \n'
+                       '    3: Write to all and delete chats,\n'
+                       '    4: Exit\n'))
 
-while action not in [1, 2, 3]:
-    action = int(input('Incorrect number. Please, try again: '))
+    while action not in [1, 2, 3, 4]:
+        action = int(input('Incorrect number. Please, try again: '))
 
-
-if action == 1:
-    chat_name = input('Input chat name: ')
-    while chat_name not in dialog_names:
-        chat_name = input('Incorrect chat name. Please, try again: ')
-    read_chat(chat_name)
-elif action == 2:
-    write_chat(0)
-elif action == 3:
-    write_chat(1)
-
+    if action == 1:
+        chat_name = input('Input chat name: ')
+        while chat_name not in dialog_names:
+            chat_name = input('Incorrect chat name. Please, try again: ')
+        read_chat(chat_name)
+    elif action == 2:
+        write_chat(0)
+    elif action == 3:
+        write_chat(1)
+    else:
+        break
+    print()
 loop.stop()
