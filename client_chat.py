@@ -34,8 +34,12 @@ def read_chat(chat_name):
         writer = csv.writer(csv_total)
         for user in ids:
             if user.id not in total:
-                writer.writerow([user.id] + [user.username] + [user.first_name] + [user.last_name] + [user.phone] +
+                try:
+                    writer.writerow([user.id] + [user.username] + [user.first_name] + [user.last_name] + [user.phone] +
                                 [chat_name] + [0])
+                except:
+                    writer.writerow([user.id] + [0] + [0] + [0] + [0] +
+                                    [0] + [0])
 
 
 def write_chat(delete=0):
