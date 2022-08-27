@@ -96,3 +96,5 @@ elif action == 4:
 elif action == 5:
     read_chat(file_name)
     write_chat(file_name, 1)
+
+loop.stop()
