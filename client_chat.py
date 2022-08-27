@@ -49,11 +49,13 @@ def write_chat(delete=0):
         for i, user in enumerate(reader):
             if i and user[6] == '0':
                 users.append(int(user[0]))
-
+    photo = input('Send photo (yes or no): ')
     with open('message.txt') as file_message:
         message = file_message.read()
         for user in users:
             loop.run_until_complete(client.send_message(user, message))
+            if photo == 'yes':
+                loop.run_until_complete(client.send_file(user, 'photo.jpg'))
 
     df = pd.read_csv("total_users.csv")
     df['status'] = df['status'].replace({0: 1})
