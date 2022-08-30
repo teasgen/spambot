@@ -16,6 +16,7 @@ loop = asyncio.get_event_loop()
 # cash
 dialogs = loop.run_until_complete(client.get_dialogs())
 dialog_names = [dialogs[i].name for i in range(len(dialogs))]
+enc = 'utf-16-be'
 
 
 def read_chat(chat_name):
@@ -42,13 +43,13 @@ def read_chat(chat_name):
             ids.append(user)
 
     total = set()
-    with open('total_users.csv', 'r') as csv_total:
+    with open('total_users.csv', 'r', encoding=enc) as csv_total:
         reader = csv.reader(csv_total)
         for i, user in enumerate(reader):
             if i:
                 total.add(int(user[0]))
 
-    with open('total_users.csv', 'a', newline='') as csv_total:
+    with open('total_users.csv', 'a', newline='', encoding=enc) as csv_total:
         writer = csv.writer(csv_total)
         for user in ids:
             if user.id not in total:
@@ -61,23 +62,23 @@ def read_chat(chat_name):
 
 
 def write_chat(delete=0):
-    with open('total_users.csv', 'r') as csvfile:
+    with open('total_users.csv', 'r', encoding=enc) as csvfile:
         reader = csv.reader(csvfile)
         users = []
         for i, user in enumerate(reader):
             if i and user[6] == '0':
                 users.append(int(user[0]))
     photo = input('Send photo (yes or no): ')
-    with open('message.txt') as file_message:
+    with open('message.txt', encoding=enc) as file_message:
         message = file_message.read()
         for user in users:
             loop.run_until_complete(client.send_message(user, message))
             if photo == 'yes':
                 loop.run_until_complete(client.send_file(user, 'photo.jpg'))
 
-    df = pd.read_csv("total_users.csv", encoding='windows-1251')
+    df = pd.read_csv("total_users.csv", encoding=enc)
     df['status'] = df['status'].replace({0: 1})
-    df.to_csv("total_users.csv", index=False)
+    df.to_csv("total_users.csv", index=False, encoding=enc)
 
     if not delete:
         return
