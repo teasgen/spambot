@@ -8,7 +8,7 @@ import time
 
 account = int(input('Input account number: '))
 
-acc = pd.read_csv("accounts.csv")
+acc = pd.read_excel("accounts.xlsx")
 username = acc.iloc[account - 1].username
 api_id = acc.iloc[account - 1].api_id
 api_hash = acc.iloc[account - 1].hash_id
@@ -47,31 +47,37 @@ def read_chat(chat_name):
             ids.append(user)
 
     total = set()
-    with open('total_users.csv', 'r', encoding=enc) as csv_total:
-        reader = csv.reader(csv_total)
-        for i, user in enumerate(reader):
-            if i:
-                total.add(int(user[0]))
+    df = pd.read_excel("total_users.xlsx")
+    for i in range(len(df)):
+        total.add(int(df.iloc[i]['user id']))
 
-    with open('total_users.csv', 'a', newline='', encoding=enc) as csv_total:
-        writer = csv.writer(csv_total)
-        for user in ids:
-            if user.id not in total:
-                try:
-                    writer.writerow([user.id] + [user.username] + [user.first_name] + [user.last_name] + [user.phone] +
-                                    [chat_name] + [0])
-                except:
-                    writer.writerow([user.id] + [0] + [0] + [0] + [0] +
-                                    [0] + [0])
+    for user in ids:
+        if user.id not in total:
+            try:
+                new = pd.DataFrame(
+                    {"user id": [user.id], "username": [user.username], "user first name": [user.first_name],
+                     "user last name": [user.last_name],
+                     "user phone": [user.phone], "chat name": [chat_name], "status": [0]})
+            except:
+                new = pd.DataFrame(
+                    {"user id": [user.id], "username": [0], "user first name": [0],
+                     "user last name": [0],
+                     "user phone": [0], "chat name": [0], "status": [0]})
+            df = pd.concat([df, new])
+    df.index = [0] * len(df)
+    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    df.to_excel("total_users.xlsx")
 
 
 def write_chat(delete=0):
-    with open('total_users.csv', 'r', encoding=enc) as csvfile:
-        reader = csv.reader(csvfile)
-        users = []
-        for i, user in enumerate(reader):
-            if i and user[6] == '0':
-                users.append(int(user[0]))
+    df = pd.read_excel("total_users.xlsx")
+    users = []
+    for i in range(len(df)):
+        if len(users) == 20:
+            break
+        if df.iloc[i]['status'] == 0:
+            users.append(int(df.iloc[i]['user id']))
+            df.loc[i, 'status'] = 2
     photo = input('Send photo (yes or no): ')
     with open('message.txt', encoding=enc) as file_message:
         message = file_message.read()
@@ -79,12 +85,13 @@ def write_chat(delete=0):
             loop.run_until_complete(client.send_message(user, message))
             if photo == 'yes':
                 loop.run_until_complete(client.send_file(user, 'photo.jpg'))
-            if i != len(users) - 1:
-                time.sleep(181)
+            # if i != len(users) - 1:
+            #    time.sleep(181)
 
-    df = pd.read_csv("total_users.csv", encoding=enc)
-    df['status'] = df['status'].replace({0: 1})
-    df.to_csv("total_users.csv", index=False, encoding=enc)
+    df['status'] = df['status'].replace({2: 1})
+    df.index = [0] * len(df)
+    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    df.to_excel("total_users.xlsx")
 
     if not delete:
         return
