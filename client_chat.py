@@ -85,8 +85,8 @@ def write_chat(delete=0):
             loop.run_until_complete(client.send_message(user, message))
             if photo == 'yes':
                 loop.run_until_complete(client.send_file(user, 'photo.jpg'))
-            # if i != len(users) - 1:
-            #    time.sleep(181)
+            if i != len(users) - 1:
+               time.sleep(181)
 
     df['status'] = df['status'].replace({2: 1})
     df.index = [0] * len(df)
