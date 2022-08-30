@@ -4,10 +4,14 @@ import csv
 import pandas as pd
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.types import ChannelParticipantsSearch
+import time
 
-username = input('Input your username: ')
-api_id = int(input('Input your api_id: '))
-api_hash = input('Input your hash_id: ')
+account = int(input('Input account number: '))
+
+acc = pd.read_csv("accounts.csv")
+username = acc.iloc[account - 1].username
+api_id = acc.iloc[account - 1].api_id
+api_hash = acc.iloc[account - 1].hash_id
 
 client = TelegramClient(username, api_id, api_hash)
 client.start()
@@ -71,10 +75,12 @@ def write_chat(delete=0):
     photo = input('Send photo (yes or no): ')
     with open('message.txt', encoding=enc) as file_message:
         message = file_message.read()
-        for user in users:
+        for i, user in enumerate(users):
             loop.run_until_complete(client.send_message(user, message))
             if photo == 'yes':
                 loop.run_until_complete(client.send_file(user, 'photo.jpg'))
+            if i != len(users) - 1:
+                time.sleep(181)
 
     df = pd.read_csv("total_users.csv", encoding=enc)
     df['status'] = df['status'].replace({0: 1})
