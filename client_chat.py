@@ -5,6 +5,7 @@ import pandas as pd
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.types import ChannelParticipantsSearch
 import time
+import random
 
 account = int(input('Input account number: '))
 
@@ -20,7 +21,6 @@ loop = asyncio.get_event_loop()
 # cash
 dialogs = loop.run_until_complete(client.get_dialogs())
 dialog_names = [dialogs[i].name for i in range(len(dialogs))]
-enc = 'utf-16-be'
 
 
 def read_chat(chat_name):
@@ -79,14 +79,16 @@ def write_chat(delete=0):
             users.append(int(df.iloc[i]['user id']))
             df.loc[i, 'status'] = 2
     photo = input('Send photo (yes or no): ')
-    with open('message.txt', encoding=enc) as file_message:
-        message = file_message.read()
-        for i, user in enumerate(users):
+    for i, user in enumerate(users):
+        message_name = 'message' + str(random.randint(0, 9)) + '.txt'
+        with open(message_name, encoding='windows-1251') as file_message:
+            message = file_message.read()
             loop.run_until_complete(client.send_message(user, message))
+            print(f'{i + 1} user\'s id = {user}')
             if photo == 'yes':
                 loop.run_until_complete(client.send_file(user, 'photo.jpg'))
             if i != len(users) - 1:
-               time.sleep(181)
+                time.sleep(random.randint(30, 61))
 
     df['status'] = df['status'].replace({2: 1})
     df.index = [0] * len(df)
