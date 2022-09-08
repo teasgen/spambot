@@ -73,12 +73,14 @@ def read_chat(chat_name):
 def write_chat(delete=0):
     df = pd.read_excel("total_users.xlsx")
     users = []
+    indexes = []
     for i in range(len(df)):
         if len(users) == 60:
             break
         if df.iloc[i]['status'] == 0:
             users.append(int(df.iloc[i]['user id']))
             df.loc[i, 'status'] = 2
+            indexes.append(i)
     photo = input('Send photo (yes or no): ')
     send = 0
     for i, user in enumerate(users):
@@ -93,6 +95,7 @@ def write_chat(delete=0):
             except:
                 ok = 0
             if not ok:
+                df.loc[indexes[i], 'status'] = 3
                 continue
             send += 1
             print(f'{i + 1} user\'s id = {user}')
