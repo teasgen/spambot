@@ -21,6 +21,7 @@ loop = asyncio.get_event_loop()
 # cash
 dialogs = loop.run_until_complete(client.get_dialogs())
 dialog_names = [dialogs[i].name for i in range(len(dialogs))]
+enc = 'utf-16-be'
 
 
 def read_chat(chat_name):
@@ -81,7 +82,7 @@ def write_chat(delete=0):
     photo = input('Send photo (yes or no): ')
     for i, user in enumerate(users):
         message_name = 'message' + str(random.randint(0, 9)) + '.txt'
-        with open(message_name, encoding='windows-1251') as file_message:
+        with open(message_name, encoding=enc) as file_message:
             message = file_message.read()
             loop.run_until_complete(client.send_message(user, message))
             print(f'{i + 1} user\'s id = {user}')
