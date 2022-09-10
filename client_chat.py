@@ -74,13 +74,15 @@ def write_chat(delete=0):
     df = pd.read_excel("total_users.xlsx")
     users = []
     indexes = []
+    usernames = []
     for i in range(len(df)):
-        if len(users) == 60:
+        if len(users) == 200:
             break
         if df.iloc[i]['status'] == 0:
             users.append(int(df.iloc[i]['user id']))
             df.loc[i, 'status'] = 2
             indexes.append(i)
+            usernames.append(df.iloc[i]['username'])
     photo = input('Send photo (yes or no): ')
     send = 0
     for i, user in enumerate(users):
@@ -88,15 +90,20 @@ def write_chat(delete=0):
             break
         message_name = 'message' + str(random.randint(0, 9)) + '.txt'
         with open(message_name, encoding=enc) as file_message:
-            ok = 1
             message = file_message.read()
+            ok_id = 1
             try:
                 loop.run_until_complete(client.send_message(user, message))
-            except:
-                ok = 0
-            if not ok:
-                df.loc[indexes[i], 'status'] = 3
-                continue
+            except ValueError:
+                ok_id = 0
+
+            if not ok_id:
+                try:
+                    loop.run_until_complete(client.send_message(usernames[i], message))
+                except ValueError:
+                    df.loc[indexes[i], 'status'] = 3
+                    continue
+
             send += 1
             print(f'{i + 1} user\'s id = {user}')
             if photo == 'yes':
