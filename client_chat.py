@@ -88,21 +88,25 @@ def write_chat(delete=0):
     for i, user in enumerate(users):
         if send >= 20:
             break
-        message_name = 'message' + str(random.randint(0, 9)) + '.txt'
+        message_name = 'message' + str(random.randint(0, 0)) + '.txt'
         with open(message_name, encoding=enc) as file_message:
             message = file_message.read()
             ok_id = 1
+            ok_username = (usernames[i] == usernames[i])  # not nan
             try:
                 loop.run_until_complete(client.send_message(user, message))
             except ValueError:
                 ok_id = 0
 
-            if not ok_id:
+            if not ok_id and ok_username:
                 try:
                     loop.run_until_complete(client.send_message(usernames[i], message))
                 except ValueError:
-                    df.loc[indexes[i], 'status'] = 3
-                    continue
+                    ok_username = 0
+
+            if not ok_username and not ok_id:
+                df.loc[indexes[i], 'status'] = 3
+                continue
 
             send += 1
             print(f'{i + 1} user\'s id = {user}')
