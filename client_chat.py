@@ -88,7 +88,7 @@ def write_chat(delete=0):
     for i, user in enumerate(users):
         if send >= 20:
             break
-        message_name = 'message' + str(random.randint(0, 0)) + '.txt'
+        message_name = 'message' + str(random.randint(0, 9)) + '.txt'
         with open(message_name, encoding=enc) as file_message:
             message = file_message.read()
             ok_id = 1
