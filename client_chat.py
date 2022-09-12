@@ -80,7 +80,7 @@ def write_chat(delete=0):
             break
         if df.iloc[i]['status'] == 0:
             users.append(int(df.iloc[i]['user id']))
-            df.loc[i, 'status'] = 2
+            df.loc[i, 'status'] = 2  # 2 means I want to send him
             indexes.append(i)
             usernames.append(df.iloc[i]['username'])
     photo = input('Send photo (yes or no): ')
@@ -88,7 +88,7 @@ def write_chat(delete=0):
     for i, user in enumerate(users):
         if send >= 20:
             break
-        message_name = 'message' + str(random.randint(0, 9)) + '.txt'
+        message_name = 'message' + str(random.randint(0, 0)) + '.txt'
         with open(message_name, encoding=enc) as file_message:
             message = file_message.read()
             ok_id = 1
@@ -105,9 +105,9 @@ def write_chat(delete=0):
                     ok_username = 0
 
             if not ok_username and not ok_id:
-                df.loc[indexes[i], 'status'] = 3
+                df.loc[indexes[i], 'status'] = 3  # 3 means cant send
                 continue
-
+            df.loc[indexes[i], 'status'] = 4  # 4 means message was correctly sent
             send += 1
             print(f'{i + 1} user\'s id = {user}')
             if photo == 'yes':
@@ -115,7 +115,8 @@ def write_chat(delete=0):
             if i != len(users) - 1:
                 time.sleep(random.randint(30, 61))
 
-    df['status'] = df['status'].replace({2: 1})
+    df['status'] = df['status'].replace({4: 1})  # if I sent them
+    df['status'] = df['status'].replace({2: 0})  # unused users
     df.index = [0] * len(df)
     df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
     df.to_excel("total_users.xlsx")
